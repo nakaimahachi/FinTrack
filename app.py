@@ -11,7 +11,6 @@ from crud import (
     get_summary
 )
 
-# ── Must be first Streamlit call ──
 st.set_page_config(
     page_title="FinTrack",
     page_icon="📊",
@@ -19,113 +18,160 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ── Session state defaults ──
 if "user" not in st.session_state:
     st.session_state.user = None
 
+LOGIN_CSS = """
+<link href="https://fonts.googleapis.com/css2?family=Ephesis&display=swap" rel="stylesheet">
+<style>
+    #MainMenu { visibility: hidden; }
+    footer { visibility: hidden; }
+    header, [data-testid="stHeader"] { height: 0px !important; min-height: 0px !important; overflow: visible !important; }
+    [data-testid="stDecoration"] { display: none !important; }
+    [data-testid="stSidebar"] { display: none !important; }
+    [data-testid="collapsedControl"] { display: none !important; }
+    .stDeployButton { display: none !important; }
+    .stApp, [data-testid="stAppViewContainer"] {
+        background: linear-gradient(160deg, #0a0015 0%, #12002e 50%, #0a0a1a 100%) !important;
+    }
+    .logo-wrap { display: flex; justify-content: center; margin-bottom: 8px; }
+    .login-title {
+        font-family: 'Ephesis', cursive !important;
+        font-size: 96px;
+        font-weight: 400;
+        background: linear-gradient(135deg, #f5d782, #c9960c, #f5d782);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin: 0;
+        line-height: 1.15;
+    }
+    .gold-divider {
+        width: 60px; height: 2px;
+        background: linear-gradient(90deg, transparent, #c9960c, transparent);
+        margin: 8px auto 16px auto;
+    }
+    .login-subtitle {
+        color: #7c6a9e;
+        text-align: center;
+        font-size: 11px;
+        margin-bottom: 28px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+    }
+    [data-testid="stTabs"] button { color: #7c6a9e !important; font-weight: 600 !important; letter-spacing: 1px !important; text-transform: uppercase !important; font-size: 11px !important; }
+    [data-testid="stTabs"] button[aria-selected="true"] { color: #f5d782 !important; border-bottom: 2px solid #c9960c !important; }
+    label { color: #9e8fc0 !important; font-size: 11px !important; letter-spacing: 1px !important; text-transform: uppercase !important; }
+    .stButton > button {
+        background: linear-gradient(135deg, #8B6914, #c9960c, #f5d782) !important;
+        color: #0a0015 !important;
+        border: none !important;
+        border-radius: 4px !important;
+        font-weight: 800 !important;
+        font-size: 12px !important;
+        letter-spacing: 2px !important;
+        text-transform: uppercase !important;
+    }
+    .stButton > button *, .stButton > button span, .stButton > button p { color: #0a0015 !important; }
+    .stForm { background: transparent !important; border: none !important; }
+</style>
+"""
 
-# ── LOGIN PAGE ──
+APP_CSS = """
+<style>
+    #MainMenu { visibility: hidden; }
+    footer { visibility: hidden; }
+    /* Keep header container alive at zero height so collapsedControl works */
+    header, [data-testid="stHeader"] {
+        height: 0px !important;
+        min-height: 0px !important;
+        overflow: visible !important;
+        visibility: visible !important;
+    }
+    [data-testid="stDecoration"] { display: none !important; }
+    /* Sidebar */
+    [data-testid="stSidebar"] {
+        display: block !important;
+        background: linear-gradient(180deg, #0f0020, #1a0035) !important;
+        border-right: 1px solid #2a1040 !important;
+    }
+    [data-testid="stSidebar"] * { color: #d4b8f0 !important; }
+    /* Gold sidebar toggle - both collapse and expand buttons */
+    [data-testid="stSidebarCollapseButton"] button,
+    [data-testid="collapsedControl"] button {
+        background: linear-gradient(135deg, #8B6914, #c9960c) !important;
+        border-radius: 50% !important;
+        width: 38px !important;
+        height: 38px !important;
+        border: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button svg,
+    [data-testid="collapsedControl"] button svg { fill: #0a0015 !important; }
+    [data-testid="collapsedControl"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    /* Background */
+    .stApp, [data-testid="stAppViewContainer"] {
+        background: linear-gradient(160deg, #0a0015 0%, #12002e 50%, #0a0a1a 100%) !important;
+    }
+    /* Metric cards */
+    .metric-card {
+        background: linear-gradient(135deg, #0f0020, #1a0035);
+        border-radius: 8px; padding: 20px; text-align: center;
+        border: 1px solid #2a0050; border-top: 2px solid #c9960c; margin-bottom: 10px;
+    }
+    .metric-label { color: #7c6a9e; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; }
+    .metric-value { font-size: 30px; font-weight: 700; margin-top: 6px; }
+    .income { color: #4ade80; }
+    .expense { color: #f87171; }
+    .balance-pos { color: #f5d782; }
+    .balance-neg { color: #f87171; }
+    .alert-over { background: #3b1212; border-left: 4px solid #f87171; padding: 10px 14px; border-radius: 4px; margin: 6px 0; }
+    .alert-warning { background: #1a1200; border-left: 4px solid #c9960c; padding: 10px 14px; border-radius: 4px; margin: 6px 0; }
+    .alert-ok { background: #0a1f0a; border-left: 4px solid #4ade80; padding: 10px 14px; border-radius: 4px; margin: 6px 0; }
+    h1, h2, h3 { color: #f5d782 !important; letter-spacing: 1px; }
+    .stButton > button {
+        background: linear-gradient(135deg, #8B6914, #c9960c, #f5d782) !important;
+        color: #0a0015 !important; border: none !important; border-radius: 4px !important;
+        font-weight: 800 !important; font-size: 12px !important;
+        letter-spacing: 2px !important; text-transform: uppercase !important;
+    }
+    .stButton > button *, .stButton > button span, .stButton > button p { color: #0a0015 !important; }
+    .stProgress > div > div { background: linear-gradient(90deg, #8B6914, #f5d782) !important; }
+</style>
+"""
+
+LOGO_HTML = """
+<div class="logo-wrap">
+    <svg width="52" height="46" viewBox="0 0 52 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="28" width="9" height="16" rx="1.5" fill="url(#gold1)"/>
+        <rect x="14" y="18" width="9" height="26" rx="1.5" fill="url(#gold1)"/>
+        <rect x="27" y="8" width="9" height="36" rx="1.5" fill="url(#gold1)"/>
+        <rect x="40" y="0" width="9" height="44" rx="1.5" fill="url(#gold1)"/>
+        <line x1="1" y1="44" x2="50" y2="44" stroke="#c9960c" stroke-width="1.5" stroke-linecap="round"/>
+        <defs>
+            <linearGradient id="gold1" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+                <stop offset="0%" stop-color="#f5d782"/>
+                <stop offset="100%" stop-color="#8B6914"/>
+            </linearGradient>
+        </defs>
+    </svg>
+</div>
+<div class="login-title">FinTrack</div>
+<div class="gold-divider"></div>
+<div class="login-subtitle">your family finance companion</div>
+"""
+
+
 def show_login():
-    st.markdown("""
-    <link href="https://fonts.googleapis.com/css2?family=Ephesis&display=swap" rel="stylesheet">
-    <style>
-        #MainMenu { visibility: hidden; }
-        header { height: 0px !important; visibility: hidden; }
-        footer { visibility: hidden; }
-        [data-testid="stHeader"] { height: 0px !important; min-height: 0px !important; }
-        [data-testid="stToolbar"] { display: none !important; }
-        [data-testid="stDecoration"] { display: none !important; }
-        [data-testid="stSidebar"] { display: none !important; }
-        [data-testid="collapsedControl"] { display: none !important; }
-        .stDeployButton { display: none !important; }
-        .stApp, [data-testid="stAppViewContainer"] {
-            background: linear-gradient(160deg, #0a0015 0%, #12002e 50%, #0a0a1a 100%) !important;
-        }
-        .logo-wrap { display: flex; justify-content: center; margin-bottom: 8px; }
-        .login-title {
-            font-family: 'Ephesis', cursive !important;
-            font-size: 96px;
-            font-weight: 400;
-            background: linear-gradient(135deg, #f5d782, #c9960c, #f5d782);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin: 0;
-            line-height: 1.15;
-        }
-        .gold-divider {
-            width: 60px; height: 2px;
-            background: linear-gradient(90deg, transparent, #c9960c, transparent);
-            margin: 8px auto 16px auto;
-        }
-        .login-subtitle {
-            color: #7c6a9e;
-            text-align: center;
-            font-size: 11px;
-            margin-bottom: 28px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-        [data-testid="stTabs"] button {
-            color: #7c6a9e !important;
-            font-weight: 600 !important;
-            letter-spacing: 1px !important;
-            text-transform: uppercase !important;
-            font-size: 11px !important;
-        }
-        [data-testid="stTabs"] button[aria-selected="true"] {
-            color: #f5d782 !important;
-            border-bottom: 2px solid #c9960c !important;
-        }
-        label {
-            color: #9e8fc0 !important;
-            font-size: 11px !important;
-            letter-spacing: 1px !important;
-            text-transform: uppercase !important;
-        }
-        .stButton > button {
-            background: linear-gradient(135deg, #8B6914, #c9960c, #f5d782) !important;
-            color: #0a0015 !important;
-            border: none !important;
-            border-radius: 4px !important;
-            font-weight: 800 !important;
-            font-size: 12px !important;
-            letter-spacing: 2px !important;
-            text-transform: uppercase !important;
-        }
-        .stButton > button *, .stButton > button span, .stButton > button p {
-            color: #0a0015 !important;
-        }
-        .stButton > button:hover {
-            box-shadow: 0 0 25px rgba(201, 150, 12, 0.4) !important;
-        }
-        .stForm { background: transparent !important; border: none !important; }
-    </style>
-    """, unsafe_allow_html=True)
-
+    st.markdown(LOGIN_CSS, unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.markdown("""
-        <div class="logo-wrap">
-            <svg width="52" height="46" viewBox="0 0 52 46" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="1" y="28" width="9" height="16" rx="1.5" fill="url(#gold1)"/>
-                <rect x="14" y="18" width="9" height="26" rx="1.5" fill="url(#gold1)"/>
-                <rect x="27" y="8" width="9" height="36" rx="1.5" fill="url(#gold1)"/>
-                <rect x="40" y="0" width="9" height="44" rx="1.5" fill="url(#gold1)"/>
-                <line x1="1" y1="44" x2="50" y2="44" stroke="#c9960c" stroke-width="1.5" stroke-linecap="round"/>
-                <defs>
-                    <linearGradient id="gold1" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
-                        <stop offset="0%" stop-color="#f5d782"/>
-                        <stop offset="100%" stop-color="#8B6914"/>
-                    </linearGradient>
-                </defs>
-            </svg>
-        </div>
-        <div class="login-title">FinTrack</div>
-        <div class="gold-divider"></div>
-        <div class="login-subtitle">your family finance companion</div>
-        """, unsafe_allow_html=True)
-
+        st.markdown(LOGO_HTML, unsafe_allow_html=True)
         tab1, tab2 = st.tabs(["Sign In", "Create Account"])
         with tab1:
             with st.form("login_form"):
@@ -139,7 +185,6 @@ def show_login():
                         st.rerun()
                     else:
                         st.error("Invalid email or password.")
-
         with tab2:
             with st.form("register_form"):
                 name = st.text_input("Full Name", placeholder="Your full name")
@@ -162,98 +207,11 @@ def show_login():
                             st.error(msg)
 
 
-# ── MAIN APP ──
 def show_app():
     user = st.session_state.user
     today = date.today()
 
-    st.markdown("""
-    <style>
-        #MainMenu { visibility: hidden; }
-        header { visibility: hidden; }
-        footer { visibility: hidden; }
-        #MainMenu { visibility: hidden; }
-        header { height: 0px !important; visibility: hidden; }
-        footer { visibility: hidden; }
-        [data-testid="stHeader"] { height: 0px !important; min-height: 0px !important; }
-        [data-testid="stDecoration"] { display: none !important; }
-        /* Restore sidebar controls */
-        [data-testid="stSidebar"] { display: block !important; }
-        [data-testid="collapsedControl"] { display: block !important; visibility: visible !important; }
-        [data-testid="collapsedControl"] button {
-            background: linear-gradient(135deg, #8B6914, #c9960c) !important;
-            border-radius: 50% !important;
-            width: 38px !important;
-            height: 38px !important;
-            border: none !important;
-        }
-        [data-testid="collapsedControl"] button svg { fill: #0a0015 !important; }
-        /* Style native sidebar toggle gold so it's always visible */
-        [data-testid="stSidebarCollapseButton"] button,
-        [data-testid="collapsedControl"] button {
-            background: linear-gradient(135deg, #8B6914, #c9960c) !important;
-            border-radius: 50% !important;
-            border: none !important;
-        }
-        [data-testid="stSidebarCollapseButton"] button svg,
-        [data-testid="collapsedControl"] button svg {
-            fill: #0a0015 !important;
-        }
-        .stApp, [data-testid="stAppViewContainer"] {
-            background: linear-gradient(160deg, #0a0015 0%, #12002e 50%, #0a0a1a 100%) !important;
-        }
-        [data-testid="stSidebar"] {
-            background: linear-gradient(180deg, #0f0020, #1a0035) !important;
-            border-right: 1px solid #2a1040 !important;
-        }
-        [data-testid="stSidebar"] * { color: #d4b8f0 !important; }
-        .metric-card {
-            background: linear-gradient(135deg, #0f0020, #1a0035);
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid #2a0050;
-            border-top: 2px solid #c9960c;
-            margin-bottom: 10px;
-        }
-        .metric-label { color: #7c6a9e; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; }
-        .metric-value { font-size: 30px; font-weight: 700; margin-top: 6px; }
-        .income { color: #4ade80; }
-        .expense { color: #f87171; }
-        .balance-pos { color: #f5d782; }
-        .balance-neg { color: #f87171; }
-        .alert-over { background: #3b1212; border-left: 4px solid #f87171; padding: 10px 14px; border-radius: 4px; margin: 6px 0; }
-        .alert-warning { background: #1a1200; border-left: 4px solid #c9960c; padding: 10px 14px; border-radius: 4px; margin: 6px 0; }
-        .alert-ok { background: #0a1f0a; border-left: 4px solid #4ade80; padding: 10px 14px; border-radius: 4px; margin: 6px 0; }
-        h1, h2, h3 { color: #f5d782 !important; letter-spacing: 1px; }
-        .stButton > button {
-            background: linear-gradient(135deg, #8B6914, #c9960c, #f5d782) !important;
-            color: #0a0015 !important;
-            border: none !important;
-            border-radius: 4px !important;
-            font-weight: 800 !important;
-            font-size: 12px !important;
-            letter-spacing: 2px !important;
-            text-transform: uppercase !important;
-        }
-        .stButton > button *, .stButton > button span, .stButton > button p { color: #0a0015 !important; }
-        .stProgress > div > div { background: linear-gradient(90deg, #8B6914, #f5d782) !important; }
-        /* Style native sidebar toggle buttons */
-        [data-testid="stSidebarCollapseButton"] button,
-        [data-testid="collapsedControl"] button {
-            background: linear-gradient(135deg, #8B6914, #c9960c) !important;
-            border-radius: 50% !important;
-            width: 32px !important;
-            height: 32px !important;
-            border: none !important;
-        }
-        [data-testid="stSidebarCollapseButton"] button svg,
-        [data-testid="collapsedControl"] button svg {
-            fill: #0a0015 !important;
-            color: #0a0015 !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+    st.markdown(APP_CSS, unsafe_allow_html=True)
 
     with st.sidebar:
         st.markdown("## 📊 FinTrack")
@@ -279,7 +237,6 @@ def show_app():
             st.session_state.user = None
             st.rerun()
 
-    # ── DASHBOARD ──
     if page == "Dashboard":
         st.markdown("# Dashboard")
         try:
@@ -352,7 +309,6 @@ def show_app():
         else:
             st.info("No transactions yet. Add one to get started!")
 
-    # ── FAMILY SUMMARY ──
     elif page == "Family Summary":
         st.markdown("# Family Summary")
         users = get_all_users()
@@ -396,7 +352,6 @@ def show_app():
                                    font_color="white", margin=dict(t=20, b=20))
                 st.plotly_chart(fig, use_container_width=True)
 
-    # ── ADD TRANSACTION ──
     elif page == "Add Transaction":
         st.markdown("# Add Transaction")
         tx_type = st.selectbox("Type", ["expense", "income"])
@@ -439,7 +394,6 @@ def show_app():
                         except Exception:
                             pass
 
-    # ── BUDGETS ──
     elif page == "Budgets":
         st.markdown("# Budgets")
         col1, col2 = st.columns(2)
@@ -488,7 +442,6 @@ def show_app():
             except Exception:
                 pass
 
-    # ── MANAGE CATEGORIES ──
     elif page == "Manage Categories":
         st.markdown("# Manage Categories")
         col1, col2 = st.columns(2)
@@ -523,7 +476,6 @@ def show_app():
                 else:
                     c3.write("Default")
 
-    # ── ALL TRANSACTIONS ──
     elif page == "All Transactions":
         st.markdown("# All Transactions")
         try:
@@ -563,7 +515,6 @@ def show_app():
                     st.rerun()
 
 
-# ── ENTRY POINT ──
 if st.session_state.user is None:
     show_login()
 else:
