@@ -26,11 +26,19 @@ LOGIN_CSS = """
 <style>
     #MainMenu { visibility: hidden; }
     footer { visibility: hidden; }
-    header, [data-testid="stHeader"] { height: 0px !important; min-height: 0px !important; overflow: visible !important; }
+    header, [data-testid="stHeader"] {
+        background: transparent !important;
+        height: 2.75rem !important;
+        min-height: 2.75rem !important;
+        visibility: visible !important;
+    }
     [data-testid="stDecoration"] { display: none !important; }
+    [data-testid="stToolbar"] { display: none !important; }
+    .stAppDeployButton { display: none !important; }
     [data-testid="stSidebar"] { display: none !important; }
     [data-testid="collapsedControl"] { display: none !important; }
     .stDeployButton { display: none !important; }
+    .block-container { padding-top: 1.5rem !important; }
     .stApp, [data-testid="stAppViewContainer"] {
         background: linear-gradient(160deg, #0a0015 0%, #12002e 50%, #0a0a1a 100%) !important;
     }
@@ -81,17 +89,17 @@ APP_CSS = """
 <style>
     #MainMenu { visibility: hidden; }
     footer { visibility: hidden; }
-    /* Keep header container alive at zero height so collapsedControl works */
+    /* Make header transparent and keep proper height so layout stays intact */
     header, [data-testid="stHeader"] {
-        height: 0px !important;
-        min-height: 0px !important;
+        background: transparent !important;
+        height: 2.75rem !important;
+        min-height: 2.75rem !important;
         visibility: visible !important;
     }
     [data-testid="stDecoration"] { display: none !important; }
-    /* Fix top content cutoff caused by header being 0px */
-    .block-container {
-        padding-top: 2.5rem !important;
-    }
+    [data-testid="stToolbar"] { display: none !important; }
+    .stAppDeployButton { display: none !important; }
+    .block-container { padding-top: 1.5rem !important; }
     /* Sidebar */
     [data-testid="stSidebar"] {
         display: block !important;
