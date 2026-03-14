@@ -28,11 +28,9 @@ LOGIN_CSS = """
     #MainMenu { visibility: hidden; }
     footer { visibility: hidden; }
 
+    /* Leave Streamlit header geometry alone */
     header, [data-testid="stHeader"] {
         background: transparent !important;
-        height: 2.75rem !important;
-        min-height: 2.75rem !important;
-        visibility: visible !important;
     }
 
     [data-testid="stDecoration"] { display: none !important; }
@@ -43,7 +41,7 @@ LOGIN_CSS = """
     [data-testid="collapsedControl"] { display: none !important; }
 
     .block-container {
-        padding-top: 1.2rem !important;
+        padding-top: 2.5rem !important;
     }
 
     .stApp, [data-testid="stAppViewContainer"] {
@@ -129,21 +127,18 @@ APP_CSS = """
     #MainMenu { visibility: hidden; }
     footer { visibility: hidden; }
 
-    /* Keep header alive so collapsed sidebar control works */
+    /* Leave Streamlit header geometry alone */
     header, [data-testid="stHeader"] {
         background: transparent !important;
-        height: 2.75rem !important;
-        min-height: 2.75rem !important;
-        visibility: visible !important;
     }
 
     [data-testid="stDecoration"] { display: none !important; }
     [data-testid="stToolbar"] { display: none !important; }
     .stAppDeployButton, .stDeployButton { display: none !important; }
 
-    /* Prevent top content from being cut off */
+    /* Give content safe room below the native header area */
     .block-container {
-        padding-top: 1.2rem !important;
+        padding-top: 3.5rem !important;
     }
 
     /* Sidebar */
@@ -181,12 +176,10 @@ APP_CSS = """
         opacity: 1 !important;
     }
 
-    /* Background */
     .stApp, [data-testid="stAppViewContainer"] {
         background: linear-gradient(160deg, #0a0015 0%, #12002e 50%, #0a0a1a 100%) !important;
     }
 
-    /* Cards */
     .metric-card {
         background: linear-gradient(135deg, #0f0020, #1a0035);
         border-radius: 8px;
