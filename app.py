@@ -135,6 +135,7 @@ def show_login():
                     user = login_user(email, password)
                     if user:
                         st.session_state.user = user
+                        st.rerun()
                     else:
                         st.error("Invalid email or password.")
 
@@ -172,7 +173,26 @@ def show_app():
         footer { visibility: hidden; }
         [data-testid="stHeader"] { display: none !important; }
         [data-testid="stDecoration"] { display: none !important; }
-        [data-testid="collapsedControl"] { display: block !important; visibility: visible !important; }
+        [data-testid="stSidebarCollapseButton"] {
+            display: none !important;
+        }
+        .menu-btn {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 9999;
+            background: linear-gradient(135deg, #8B6914, #c9960c);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #0a0015;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+        .menu-btn:hover {
+            box-shadow: 0 0 15px rgba(201, 150, 12, 0.5);
+        }
         .stApp, [data-testid="stAppViewContainer"] {
             background: linear-gradient(160deg, #0a0015 0%, #12002e 50%, #0a0a1a 100%) !important;
         }
@@ -215,7 +235,6 @@ def show_app():
     </style>
     """, unsafe_allow_html=True)
 
-    # Force sidebar open by clearing browser's remembered state
     st.components.v1.html("""
         <script>
             const keys = Object.keys(window.parent.localStorage);
@@ -225,7 +244,29 @@ def show_app():
                 }
             });
         </script>
-    """, height=0)
+        <style>
+            .menu-btn {
+                position: fixed;
+                top: 14px;
+                left: 14px;
+                z-index: 99999;
+                background: linear-gradient(135deg, #8B6914, #c9960c);
+                border: none;
+                border-radius: 6px;
+                padding: 7px 11px;
+                cursor: pointer;
+                font-size: 16px;
+                color: #0a0015;
+                font-weight: bold;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            }
+        </style>
+        <button class="menu-btn" onclick="
+            var btn = window.parent.document.querySelector('[data-testid=stSidebarCollapseButton]');
+            if (!btn) btn = window.parent.document.querySelector('[data-testid=collapsedControl]');
+            if (btn) btn.click();
+        ">☰</button>
+    """, height=50)
 
     with st.sidebar:
         st.markdown("## 📊 FinTrack")
