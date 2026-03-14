@@ -232,41 +232,22 @@ def show_app():
         }
         .stButton > button *, .stButton > button span, .stButton > button p { color: #0a0015 !important; }
         .stProgress > div > div { background: linear-gradient(90deg, #8B6914, #f5d782) !important; }
+        /* Style native sidebar toggle buttons */
+        [data-testid="stSidebarCollapseButton"] button,
+        [data-testid="collapsedControl"] button {
+            background: linear-gradient(135deg, #8B6914, #c9960c) !important;
+            border-radius: 50% !important;
+            width: 32px !important;
+            height: 32px !important;
+            border: none !important;
+        }
+        [data-testid="stSidebarCollapseButton"] button svg,
+        [data-testid="collapsedControl"] button svg {
+            fill: #0a0015 !important;
+            color: #0a0015 !important;
+        }
     </style>
     """, unsafe_allow_html=True)
-
-    st.components.v1.html("""
-        <script>
-            const keys = Object.keys(window.parent.localStorage);
-            keys.forEach(k => {
-                if (k.includes('sidebar') || k.includes('Sidebar')) {
-                    window.parent.localStorage.removeItem(k);
-                }
-            });
-        </script>
-        <style>
-            .menu-btn {
-                position: fixed;
-                top: 14px;
-                left: 14px;
-                z-index: 99999;
-                background: linear-gradient(135deg, #8B6914, #c9960c);
-                border: none;
-                border-radius: 6px;
-                padding: 7px 11px;
-                cursor: pointer;
-                font-size: 16px;
-                color: #0a0015;
-                font-weight: bold;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            }
-        </style>
-        <button class="menu-btn" onclick="
-            var btn = window.parent.document.querySelector('[data-testid=stSidebarCollapseButton]');
-            if (!btn) btn = window.parent.document.querySelector('[data-testid=collapsedControl]');
-            if (btn) btn.click();
-        ">☰</button>
-    """, height=50)
 
     with st.sidebar:
         st.markdown("## 📊 FinTrack")
