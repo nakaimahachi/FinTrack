@@ -173,25 +173,16 @@ def show_app():
         footer { visibility: hidden; }
         [data-testid="stHeader"] { display: none !important; }
         [data-testid="stDecoration"] { display: none !important; }
-        [data-testid="stSidebarCollapseButton"] {
-            display: none !important;
+        /* Style native sidebar toggle gold so it's always visible */
+        [data-testid="stSidebarCollapseButton"] button,
+        [data-testid="collapsedControl"] button {
+            background: linear-gradient(135deg, #8B6914, #c9960c) !important;
+            border-radius: 50% !important;
+            border: none !important;
         }
-        .menu-btn {
-            position: fixed;
-            top: 12px;
-            left: 12px;
-            z-index: 9999;
-            background: linear-gradient(135deg, #8B6914, #c9960c);
-            border: none;
-            border-radius: 6px;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 18px;
-            color: #0a0015;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-        }
-        .menu-btn:hover {
-            box-shadow: 0 0 15px rgba(201, 150, 12, 0.5);
+        [data-testid="stSidebarCollapseButton"] button svg,
+        [data-testid="collapsedControl"] button svg {
+            fill: #0a0015 !important;
         }
         .stApp, [data-testid="stAppViewContainer"] {
             background: linear-gradient(160deg, #0a0015 0%, #12002e 50%, #0a0a1a 100%) !important;
