@@ -30,12 +30,13 @@ def show_login():
     <link href="https://fonts.googleapis.com/css2?family=Ephesis&display=swap" rel="stylesheet">
     <style>
         #MainMenu { visibility: hidden; }
-        header { visibility: hidden; }
+        header { height: 0px !important; visibility: hidden; }
         footer { visibility: hidden; }
-        [data-testid="stHeader"] { display: none !important; }
+        [data-testid="stHeader"] { height: 0px !important; min-height: 0px !important; }
         [data-testid="stToolbar"] { display: none !important; }
         [data-testid="stDecoration"] { display: none !important; }
         [data-testid="stSidebar"] { display: none !important; }
+        [data-testid="collapsedControl"] { display: none !important; }
         .stDeployButton { display: none !important; }
         .stApp, [data-testid="stAppViewContainer"] {
             background: linear-gradient(160deg, #0a0015 0%, #12002e 50%, #0a0a1a 100%) !important;
@@ -171,8 +172,22 @@ def show_app():
         #MainMenu { visibility: hidden; }
         header { visibility: hidden; }
         footer { visibility: hidden; }
-        [data-testid="stHeader"] { display: none !important; }
+        #MainMenu { visibility: hidden; }
+        header { height: 0px !important; visibility: hidden; }
+        footer { visibility: hidden; }
+        [data-testid="stHeader"] { height: 0px !important; min-height: 0px !important; }
         [data-testid="stDecoration"] { display: none !important; }
+        /* Restore sidebar controls */
+        [data-testid="stSidebar"] { display: block !important; }
+        [data-testid="collapsedControl"] { display: block !important; visibility: visible !important; }
+        [data-testid="collapsedControl"] button {
+            background: linear-gradient(135deg, #8B6914, #c9960c) !important;
+            border-radius: 50% !important;
+            width: 38px !important;
+            height: 38px !important;
+            border: none !important;
+        }
+        [data-testid="collapsedControl"] button svg { fill: #0a0015 !important; }
         /* Style native sidebar toggle gold so it's always visible */
         [data-testid="stSidebarCollapseButton"] button,
         [data-testid="collapsedControl"] button {
