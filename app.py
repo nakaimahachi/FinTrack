@@ -85,10 +85,13 @@ APP_CSS = """
     header, [data-testid="stHeader"] {
         height: 0px !important;
         min-height: 0px !important;
-        overflow: visible !important;
         visibility: visible !important;
     }
     [data-testid="stDecoration"] { display: none !important; }
+    /* Fix top content cutoff caused by header being 0px */
+    .block-container {
+        padding-top: 2.5rem !important;
+    }
     /* Sidebar */
     [data-testid="stSidebar"] {
         display: block !important;
